@@ -13,6 +13,8 @@ out/
 *.zip
 *.mov
 *.pdf
+# …but ship anything we've intentionally placed in /public
+!public/**/*.pdf
 .venv/
 suofeiya_mirror/
 

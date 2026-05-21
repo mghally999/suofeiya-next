@@ -176,6 +176,14 @@ export default function Footer() {
       <div className="site-footer__bottom">
         <span>© Suofeiya {year}</span>
         <nav>
+          <a
+            href="/suofeiya-company-profile-2024.pdf"
+            target="_blank"
+            rel="noreferrer"
+            data-cursor="download"
+          >
+            Company profile (PDF)
+          </a>
           <Link href="/faq">Terms</Link>
           <Link href="/faq">Privacy Policy</Link>
           <span>Designed with intention</span>

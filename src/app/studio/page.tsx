@@ -88,10 +88,19 @@ export default function StudioPage() {
           Suofeiya brings specialists, collaborators and craftspeople into one cohesive studio. Every project is
           shepherded by a senior designer from first conversation to final handover.
         </p>
-        <div style={{ marginTop: 60 }}>
+        <div style={{ marginTop: 60, display: 'flex', flexWrap: 'wrap', gap: 32, alignItems: 'baseline' }}>
           <Link href="/careers" className="link-underline">
             View franchise & careers
           </Link>
+          <a
+            href="/suofeiya-company-profile-2024.pdf"
+            target="_blank"
+            rel="noreferrer"
+            className="link-underline"
+            data-cursor="download"
+          >
+            Download company profile (PDF · 3.8 MB) ↓
+          </a>
         </div>
       </section>
     </>
