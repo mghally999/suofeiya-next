@@ -1,13 +1,16 @@
 'use client';
 
+import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 import { testimonials } from '@/lib/content';
 import SectionHeader from './SectionHeader';
 
 /**
  * Customer Feedbacks — B2B partner quotes mapped to the four real
- * Suofeiya case studies (GH, SLS, NC, ST). Click a card to pin the
- * quote in the main panel.
+ * Suofeiya case studies (GH, SLS, NC, ST). Each testimonial now
+ * carries a project hero image that swaps in the right column when
+ * a quote is activated, so the section reads as a film-edit "this
+ * is the project they're talking about".
  */
 export default function Testimonials() {
   const [active, setActive] = useState(0);
@@ -51,7 +54,7 @@ export default function Testimonials() {
           align="left"
           tone="cream"
         />
-        <div className="quote__layout">
+        <div className="quote__layout quote__layout--media">
           <blockquote className="quote__main fade-up" key={active}>
             <span className="quote__mark font-display" aria-hidden>
               ＂
@@ -62,19 +65,31 @@ export default function Testimonials() {
               <span className="quote__role">{current.role}</span>
             </footer>
           </blockquote>
-          <ul className="quote__list">
-            {testimonials.map((t, i) => (
-              <li key={t.author} className={`quote__item fade-up${i === active ? ' is-active' : ''}`}>
-                <button type="button" onClick={() => setActive(i)} data-cursor="read">
-                  <span className="quote__num font-display">{String(i + 1).padStart(2, '0')}</span>
-                  <span>
-                    <strong>{t.author}</strong>
-                    <em>{t.role}</em>
-                  </span>
-                </button>
-              </li>
-            ))}
-          </ul>
+          <div className="quote__media-stack">
+            <figure className="quote__media" key={`media-${active}`}>
+              <Image
+                src={current.image}
+                alt={`${current.author} — project still`}
+                fill
+                sizes="(max-width: 900px) 100vw, 40vw"
+                quality={70}
+                style={{ objectFit: 'cover' }}
+              />
+            </figure>
+            <ul className="quote__list">
+              {testimonials.map((t, i) => (
+                <li key={t.author} className={`quote__item fade-up${i === active ? ' is-active' : ''}`}>
+                  <button type="button" onClick={() => setActive(i)} data-cursor="read">
+                    <span className="quote__num font-display">{String(i + 1).padStart(2, '0')}</span>
+                    <span>
+                      <strong>{t.author}</strong>
+                      <em>{t.role}</em>
+                    </span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       </div>
     </section>

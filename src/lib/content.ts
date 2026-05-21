@@ -583,31 +583,36 @@ export interface Testimonial {
   quote: string;
   author: string;
   role: string;
+  image: string;
 }
 export const testimonials: Testimonial[] = [
   {
     quote:
       'Suofeiya delivered 480 whole-house units to the GH apartment program on a single specification — kitchen, wardrobe, vanity and door arrived sequenced and labelled to the room. We did not lose a day.',
     author: 'GH Apartment',
-    role: 'Property Developer · 480 units'
+    role: 'Property Developer · 480 units',
+    image: '/projects/gh-apartment/01.jpg'
   },
   {
     quote:
       'Specifying SLS suite millwork with Suofeiya replaced three sub-contractors. One contract covered the joinery, the freight and the on-site installation team.',
     author: 'SLS Hotel',
-    role: 'Hospitality Group · Suite program'
+    role: 'Hospitality Group · Suite program',
+    image: '/projects/sls-hotel/01.jpg'
   },
   {
     quote:
       'The NC Apartment tower needed 1,200 customised yet repeatable units. Suofeiya hit specification on every floor and finished six weeks ahead of the contract date.',
     author: 'NC Apartment Complex',
-    role: 'Developer · Multi-tower'
+    role: 'Developer · Multi-tower',
+    image: '/projects/nc-apartment/01.jpg'
   },
   {
     quote:
       'The DIYHome 3D walkthrough closed every spec question before the board was cut. ST front-of-house joinery arrived first pass — zero rework on the wardrobe carcasses.',
     author: 'ST Hotel',
-    role: 'Hospitality · FF&E lead'
+    role: 'Hospitality · FF&E lead',
+    image: '/projects/st-hotel/01.jpg'
   }
 ];
 
@@ -675,27 +680,32 @@ export interface SubBrand {
   name: string;
   positioning: string;
   copy: string;
+  image: string;
 }
 export const subsidiaries: SubBrand[] = [
   {
     name: 'Suofeiya · Wardrobe',
     positioning: 'The original category — custom built-in wardrobes',
-    copy: 'The founding line: whole-house customisation rooted in the French built-in wardrobe tradition since 1981.'
+    copy: 'The founding line: whole-house customisation rooted in the French built-in wardrobe tradition since 1981.',
+    image: '/images/closet-and-wardrobe.png'
   },
   {
     name: 'Milan',
     positioning: 'Kitchen Cabinet',
-    copy: 'Suofeiya’s premium kitchen-cabinet brand — Italian-influenced fronts on Industry 4.0 carcasses.'
+    copy: 'Suofeiya’s premium kitchen-cabinet brand — Italian-influenced fronts on Industry 4.0 carcasses.',
+    image: '/images/kitchen-cabinets.png'
   },
   {
     name: 'SOGAL · Door',
     positioning: 'Interior Door systems',
-    copy: 'Solid-wood, panel and frameless door programs engineered to share the wardrobe specification.'
+    copy: 'Solid-wood, panel and frameless door programs engineered to share the wardrobe specification.',
+    image: '/images/interior-door.png'
   },
   {
     name: 'Hua’he',
     positioning: 'Engineered wood panels',
-    copy: 'Vertical-integration brand for NAF / SGS engineered boards feeding every Suofeiya base.'
+    copy: 'Vertical-integration brand for NAF / SGS engineered boards feeding every Suofeiya base.',
+    image: '/images/countertop-systems.png'
   }
 ];
 

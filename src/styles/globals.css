@@ -1130,7 +1130,12 @@ button {
    chart in the studio. The `+` suffix slams in beside the digit in
    the same colour at 0.45em. */
 .stats {
-  background: var(--bg-charcoal);
+  position: relative;
+  background-color: var(--bg-charcoal);
+  background-image: linear-gradient(180deg, rgba(10, 8, 6, 0.92), rgba(10, 8, 6, 0.78)),
+    url('/cms/8688782d-2c4c-4ead-8d2e-53515799bf70.jpg');
+  background-size: cover;
+  background-position: center;
   color: var(--text-cream);
   padding: 130px var(--gutter) 110px;
 }
@@ -4237,7 +4242,11 @@ button {
 /* ===================== Network (Manufacturing bases) ===================== */
 .network {
   padding: 140px 0 120px;
-  background: var(--bg-cream-alt);
+  background-color: var(--bg-cream-alt);
+  background-image: linear-gradient(180deg, rgba(236, 228, 212, 0.95), rgba(236, 228, 212, 0.95)),
+    url('/cms/0ae0492d-bd47-4a3f-88b5-a354ec20681d.jpg');
+  background-size: cover;
+  background-position: center;
 }
 .network__inner {
   max-width: var(--maxw);
@@ -4341,7 +4350,12 @@ button {
 /* ===================== Process (delivery loop) ===================== */
 .proc {
   padding: 140px 0 120px;
-  background: var(--bg-charcoal);
+  position: relative;
+  background-color: var(--bg-charcoal);
+  background-image: linear-gradient(180deg, rgba(10, 8, 6, 0.94), rgba(10, 8, 6, 0.82)),
+    url('/cms/689aaf19-c92a-4570-b3c2-a6112cf39810.jpg');
+  background-size: cover;
+  background-position: center;
   color: var(--text-cream);
 }
 .proc__inner {
@@ -4400,7 +4414,11 @@ button {
 /* ===================== Certifications ===================== */
 .certs {
   padding: 140px 0 120px;
-  background: var(--bg);
+  background-color: var(--bg);
+  background-image: linear-gradient(180deg, rgba(244, 239, 230, 0.96), rgba(244, 239, 230, 0.96)),
+    url('/cms/923d70ab-9239-44a3-b71b-424d5fc6707f.jpg');
+  background-size: cover;
+  background-position: center;
 }
 .certs__inner {
   max-width: var(--maxw);
@@ -4472,6 +4490,32 @@ button {
   gap: 80px;
   align-items: start;
   margin-top: 48px;
+}
+/* When the testimonial swaps a project image alongside the quote
+   list, stack the image above the list in the right column. The
+   image swaps on every active-change with a soft fade. */
+.quote__media-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+.quote__media {
+  position: relative;
+  margin: 0;
+  aspect-ratio: 4/5;
+  overflow: hidden;
+  background: var(--bg-cream-alt);
+  animation: quoteMediaFade 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+}
+@keyframes quoteMediaFade {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 .quote__main {
   margin: 0;
@@ -4584,10 +4628,34 @@ button {
   margin-top: 56px;
 }
 .sub-card {
-  padding: 32px 26px 32px;
+  padding: 0 0 32px;
   background: var(--bg-cream-alt);
   border-left: 2px solid var(--brand-burgundy);
   transition: transform 0.4s var(--ease-out), box-shadow 0.4s var(--ease-out);
+  overflow: hidden;
+}
+.sub-card__media {
+  position: relative;
+  aspect-ratio: 4/3;
+  overflow: hidden;
+  background: var(--bg-cream);
+  margin: 0 0 24px;
+}
+.sub-card__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.7s var(--ease);
+}
+.sub-card:hover .sub-card__media img {
+  transform: scale(1.05);
+}
+.sub-card__idx,
+.sub-card__name,
+.sub-card__pos,
+.sub-card p {
+  padding-left: 26px;
+  padding-right: 26px;
 }
 .sub-card:hover {
   transform: translateY(-6px);
