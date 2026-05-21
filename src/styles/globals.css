@@ -4765,6 +4765,147 @@ button {
   }
 }
 
+/* ===================== Careers — open roles + media =====================
+   Two-column block: roles list on the left, two staggered photos on
+   the right. Mirrors the services-intro layout so it inherits the
+   Suofeiya editorial rhythm. */
+.careers-roles {
+  padding: 130px 0;
+  background: var(--bg);
+}
+.careers-roles__inner {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 80px;
+  align-items: start;
+}
+.careers-roles__label {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--brand-burgundy);
+  font-weight: 600;
+  margin: 0 0 32px;
+}
+.careers-roles__list ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--line);
+}
+.careers-role {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 24px;
+  padding: 26px 0;
+  border-bottom: 1px solid var(--line);
+  transition: background 0.3s var(--ease-out);
+}
+.careers-role:hover {
+  background: rgba(139, 26, 26, 0.04);
+}
+.careers-role__title {
+  font-size: clamp(18px, 1.6vw, 24px);
+  font-weight: 400;
+  color: var(--text);
+}
+.careers-role__meta {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  font-weight: 600;
+}
+.careers-roles__media {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+.careers-roles__media figure {
+  margin: 0;
+  overflow: hidden;
+  background: var(--bg-cream-alt);
+}
+.careers-roles__media-b {
+  align-self: flex-end;
+  width: 75%;
+}
+@media (max-width: 900px) {
+  .careers-roles__inner {
+    grid-template-columns: 1fr;
+    gap: 48px;
+  }
+  .careers-roles__media-b {
+    width: 100%;
+  }
+}
+
+/* ===================== Insight detail — publication overlay =====================
+   Echoes the elicyon press card style: the publication name floats
+   centred on top of the hero photo, behind the page title. */
+.insight-detail__publication {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(80px, 12vw, 200px);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(244, 239, 230, 0.08);
+  pointer-events: none;
+  z-index: 1;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+/* ===================== Contact page intro + media =====================
+   Sits between the new full-bleed hero and the form. Mirrors the
+   services-intro typographic rhythm so the page reads consistent
+   with /services and /careers. */
+.contact-page__intro {
+  padding: 0 0 56px;
+  max-width: 760px;
+}
+.contact-page__eyebrow {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--brand-burgundy);
+  font-weight: 600;
+  margin: 0 0 18px;
+}
+.contact-page__intro h2 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(34px, 4vw, 56px);
+  line-height: 1.1;
+  margin: 0 0 20px;
+}
+.contact-page__intro h2 em {
+  font-style: italic;
+  color: var(--brand-burgundy);
+}
+.contact-page__sub {
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--text-dim);
+  margin: 0;
+}
+.contact-info__media {
+  margin: 0 0 12px;
+  overflow: hidden;
+  background: var(--bg-cream-alt);
+}
+
 /* ===================== Reveal-on-scroll utility =====================
    ScrollReveal in providers/ScrollReveal.tsx writes opacity + Y
    inline on every frame, so we ONLY want a safety fallback here
