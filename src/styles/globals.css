@@ -3230,17 +3230,9 @@ button {
 }
 .pcard {
   position: relative;
-  animation: pcardIn 0.7s var(--ease-out) both;
-}
-@keyframes pcardIn {
-  from {
-    opacity: 0;
-    transform: translateY(22px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  /* No CSS keyframe intro — ScrollReveal scrubs opacity + transform
+     against scroll position instead, so the card animates *as* the
+     user scrolls rather than firing once at threshold. */
 }
 .pcard a {
   display: block;
@@ -4519,15 +4511,21 @@ button {
   }
 }
 
-/* ===================== Reveal-on-scroll utility ===================== */
+/* ===================== Reveal-on-scroll utility =====================
+   ScrollReveal in providers/ScrollReveal.tsx writes opacity + Y
+   inline on every frame, so we ONLY want a safety fallback here
+   for the first paint before GSAP runs. No transitions — animation
+   is fully scrub-driven against scroll position. */
 .fade-up {
   opacity: 0;
   transform: translateY(36px);
-  transition: opacity 0.9s var(--ease-out), transform 0.9s var(--ease-out);
+  will-change: opacity, transform;
 }
 .fade-up.is-in {
   opacity: 1;
-  transform: translateY(0);
+}
+.scroll-zoom {
+  will-change: transform;
 }
 
 /* ===================== Utilities ===================== */

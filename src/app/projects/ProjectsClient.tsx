@@ -178,7 +178,7 @@ function ProjectCardCmp({
   return (
     <article className={`pcard pcard--${project.variant}`} style={{ animationDelay: `${index * 0.05}s` }}>
       <Link href={`/projects/${project.slug}`} data-cursor="view more">
-        <figure className="pcard__media">
+        <figure className="pcard__media scroll-zoom">
           <Image src={project.image} alt={project.title} fill sizes="(max-width: 900px) 100vw, 45vw" style={{ objectFit: 'cover' }} />
           {isWip ? <span className="pcard__wip">Work in progress</span> : null}
           <span className="pcard__hover">View more</span>

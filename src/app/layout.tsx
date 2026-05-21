@@ -4,6 +4,7 @@ import '@/styles/globals.css';
 
 import { ThemeProvider } from '@/components/providers/ThemeProvider';
 import SmoothScroll from '@/components/providers/SmoothScroll';
+import ScrollReveal from '@/components/providers/ScrollReveal';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import Cursor from '@/components/layout/Cursor';
@@ -68,6 +69,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <Preloader />
           <Cursor />
           <SmoothScroll />
+          <ScrollReveal />
           <Header />
           <ThemeToggle />
           <main>{children}</main>
