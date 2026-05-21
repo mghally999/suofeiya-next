@@ -7,23 +7,26 @@ import { getGsap, getScrollTrigger } from '@/lib/gsap-client';
 /**
  * Site-wide scroll-tied reveal.
  *
- * Previous version vibrated because:
- *   - `scrub: true` snapped 1:1 to scroll, so any trackpad / lenis
- *     jitter shook the animation.
- *   - A MutationObserver on `document.body` re-wired every
- *     ScrollTrigger on every DOM mutation (hover state toggles
- *     React's class list, etc.) — every wire-up re-snapped elements
- *     to their `prep` state mid-scroll, looking like a flash.
+ * Tuning history:
+ *   - Original used `scrub: true` + a MutationObserver. The observer
+ *     re-wired on every class toggle (hover, focus), re-snapping
+ *     elements mid-scroll → "vibration".
+ *   - Pass 2 added `scrub: 0.8` smoothing. That fixed the vibration
+ *     but introduced a 0.8 s catch-up lag → elements visibly
+ *     "appeared after I stop scrolling" — the exact opposite of
+ *     what the user wants.
  *
- * This version:
- *   - Uses `scrub: <number>` (smoothing factor) so the tween catches
- *     up to scroll over a fraction of a second instead of locking
- *     1:1. Visually identical, jitter-immune.
- *   - Re-wires ONLY on `usePathname()` change — route navigation,
- *     not arbitrary DOM mutations.
- *   - Marks elements `data-reveal-wired="1"` so a re-run never
- *     touches one that's already animated.
- *   - Refreshes ScrollTrigger once after fonts + images settle.
+ * Pass 3 (this version):
+ *   - `scrub: true` again, BUT no MutationObserver anymore (re-wire
+ *     happens only on route change via `usePathname()`). The
+ *     vibration source from pass 1 is gone, so we can take the
+ *     instant 1:1 response.
+ *   - Reveal window widened to start at `top bottom` and finish at
+ *     `top 50%` so the animation runs across the full bottom half
+ *     of the viewport rather than a tight 30 % strip — gives every
+ *     pixel of scroll a visible reveal increment.
+ *   - Per-element `data-reveal-wired="1"` flag still prevents
+ *     duplicate wires on the same node.
  */
 export default function ScrollReveal() {
   const pathname = usePathname();
@@ -56,12 +59,16 @@ export default function ScrollReveal() {
         });
       };
 
-      // .fade-up — opacity + y rise scrubbed with smoothing.
+      // .fade-up — opacity + y rise scrubbed 1:1 with scroll.
+      // The reveal runs from the moment the element top enters the
+      // bottom of the viewport to when it reaches the centre. That's
+      // 50 % of viewport pixels of animation distance — enough to
+      // feel like a continuous reveal, instant enough not to lag.
       wire(
         '.fade-up',
         { opacity: 0, y: 36 },
         { opacity: 1, y: 0, ease: 'none' },
-        { start: 'top 90%', end: 'top 60%', scrub: 0.8 }
+        { start: 'top bottom', end: 'top 50%', scrub: true }
       );
 
       // .scroll-zoom — image scale across the full visible lifetime.
@@ -69,15 +76,15 @@ export default function ScrollReveal() {
         '.scroll-zoom',
         { scale: 0.96, transformOrigin: 'center center' },
         { scale: 1, ease: 'none' },
-        { start: 'top bottom', end: 'bottom top', scrub: 1 }
+        { start: 'top bottom', end: 'bottom top', scrub: true }
       );
 
-      // .reveal-line-inner — mask reveal scrubbed.
+      // .reveal-line-inner — mask reveal scrubbed 1:1.
       wire(
         '.reveal-line-inner',
         { yPercent: 100 },
         { yPercent: 0, ease: 'none' },
-        { start: 'top 95%', end: 'top 65%', scrub: 0.8 }
+        { start: 'top bottom', end: 'top 55%', scrub: true }
       );
     });
 
