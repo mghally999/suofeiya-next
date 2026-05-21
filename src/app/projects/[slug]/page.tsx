@@ -154,34 +154,43 @@ export default function ProjectDetail({ params }: { params: { slug: string } }) 
       <section className="pd-hero">
         <Image src={heroImg} alt={project.title} fill priority sizes="100vw" style={{ objectFit: 'cover' }} />
         <div className="pd-hero__scrim" aria-hidden />
-        <h1 className="pd-hero__title font-display">{project.title}</h1>
+        <h1 className="pd-hero__title font-display pd-hero__title--reveal">{project.title}</h1>
       </section>
 
       {/* 2. Intro statement */}
       <section className="pd-intro">
-        <h2 className="pd-intro__statement font-display">
-          {caseStudy ? (
-            <>
-              CRAFTED <em>by</em> ONE STUDIO,
-              <br />
-              <em>a</em> {project.category.toUpperCase()} PROGRAM
-              <br />
-              SHAPED <em>in</em> THE LANGUAGE
-              <br />
-              <em>of</em> SUOFEIYA
-            </>
-          ) : (
-            <>
-              ONE SPECIFICATION,
-              <br />
-              <em>a</em> WHOLE-HOUSE
-              <br />
-              {project.category.toUpperCase()} PROGRAM
-              <br />
-              <em>by</em> SUOFEIYA
-            </>
-          )}
-        </h2>
+        {/* `a` vs `an` agreement — Apartment/Office start with a vowel
+            sound so they read better with "an". Per §5.3 of the diff
+            brief — fixes the broken "a APARTMENT PROGRAM" line seen
+            in CURRENT_04_BROKEN_HERO_with_intro.jpg. */}
+        {(() => {
+          const article = /^[AEIOU]/i.test(project.category) ? 'an' : 'a';
+          return (
+            <h2 className="pd-intro__statement font-display">
+              {caseStudy ? (
+                <>
+                  CRAFTED <em>by</em> ONE STUDIO,
+                  <br />
+                  <em>{article}</em> {project.category.toUpperCase()} PROGRAM
+                  <br />
+                  SHAPED <em>in</em> THE LANGUAGE
+                  <br />
+                  <em>of</em> SUOFEIYA
+                </>
+              ) : (
+                <>
+                  ONE SPECIFICATION,
+                  <br />
+                  <em>a</em> WHOLE-HOUSE
+                  <br />
+                  {project.category.toUpperCase()} PROGRAM
+                  <br />
+                  <em>by</em> SUOFEIYA
+                </>
+              )}
+            </h2>
+          );
+        })()}
         <p className="pd-intro__body">
           {caseStudy?.body ??
             `A ${project.category.toLowerCase()} program drawn end-to-end by the Suofeiya studio — kitchen, wardrobe, vanity, door and built-in joinery delivered under one specification. DIYHome 3D walkthroughs close every spec question before the boards are cut; site-trained installation crews close the loop from drawing to handover.`}

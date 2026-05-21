@@ -6,14 +6,42 @@ import { useEffect, useState } from 'react';
  * Preloader echoes the logo: cream "SU•FEIYA" with a burgundy cube
  * standing in for the O. The cube is a literal SVG copy of the
  * favicon so the mark stays consistent across the brand.
+ *
+ * IMPORTANT — gated behind sessionStorage. The preloader is in the
+ * root layout, so on every client-side Link navigation the layout
+ * (and this component) remounts and the 1.4s timer restarts. That
+ * was covering the hero of every project-detail page with a black
+ * sheet for 1.4 seconds — making the hero look "broken" until the
+ * user scrolled past it. We now show the preloader ONCE per browser
+ * session and skip it entirely on subsequent navigations.
  */
+const SESSION_KEY = '__sf_preloader_shown';
+
 export default function Preloader() {
-  const [hidden, setHidden] = useState(false);
+  // Synchronously decide on the FIRST render whether the preloader
+  // should appear at all. If this is a client-side nav within the
+  // same session, skip entirely.
+  const [hidden, setHidden] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    try {
+      return sessionStorage.getItem(SESSION_KEY) === '1';
+    } catch {
+      return false;
+    }
+  });
 
   useEffect(() => {
-    const t = setTimeout(() => setHidden(true), 1400);
+    if (hidden) return; // already shown this session
+    const t = setTimeout(() => {
+      setHidden(true);
+      try {
+        sessionStorage.setItem(SESSION_KEY, '1');
+      } catch {
+        /* private-mode quotas etc — fine to ignore */
+      }
+    }, 900); // tightened from 1400ms — 0.9s is plenty for the brand mark
     return () => clearTimeout(t);
-  }, []);
+  }, [hidden]);
 
   return (
     <div className={`preloader${hidden ? ' is-hidden' : ''}`} aria-hidden={hidden}>

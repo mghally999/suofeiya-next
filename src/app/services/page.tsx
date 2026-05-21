@@ -29,7 +29,7 @@ export default function ServicesPage() {
       <section className="services-hero">
         <Image src={IMG.servicesHome} alt="Suofeiya — services" fill priority sizes="100vw" style={{ objectFit: 'cover' }} />
         <div className="services-hero__scrim" aria-hidden />
-        <h1 className="services-hero__title font-display">SERVICES</h1>
+        <h1 className="services-hero__title font-display services-hero__title--reveal">SERVICES</h1>
       </section>
 
       <section className="services-intro">

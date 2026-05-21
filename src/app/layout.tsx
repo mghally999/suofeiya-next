@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from 'next';
 import { Cormorant_Garamond, Manrope } from 'next/font/google';
 import '@/styles/globals.css';
 
-import { ThemeProvider } from '@/components/providers/ThemeProvider';
 import SmoothScroll from '@/components/providers/SmoothScroll';
 import ScrollReveal from '@/components/providers/ScrollReveal';
 import Header from '@/components/layout/Header';
@@ -10,7 +9,9 @@ import Footer from '@/components/layout/Footer';
 import Cursor from '@/components/layout/Cursor';
 import Preloader from '@/components/layout/Preloader';
 import CookieBanner from '@/components/layout/CookieBanner';
-import ThemeToggle from '@/components/layout/ThemeToggle';
+// ThemeProvider + ThemeToggle removed per STRICT_100_PERCENT_ADDENDUM —
+// the site is cream-only. The "cream" theme values are now defaults
+// on :root in globals.css.
 
 const display = Cormorant_Garamond({
   subsets: ['latin'],
@@ -63,19 +64,16 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" dir="ltr" data-theme="cream" className={`${display.variable} ${sans.variable}`}>
+    <html lang="en" dir="ltr" className={`${display.variable} ${sans.variable}`}>
       <body>
-        <ThemeProvider>
-          <Preloader />
-          <Cursor />
-          <SmoothScroll />
-          <ScrollReveal />
-          <Header />
-          <ThemeToggle />
-          <main>{children}</main>
-          <Footer />
-          <CookieBanner />
-        </ThemeProvider>
+        <Preloader />
+        <Cursor />
+        <SmoothScroll />
+        <ScrollReveal />
+        <Header />
+        <main>{children}</main>
+        <Footer />
+        <CookieBanner />
       </body>
     </html>
   );

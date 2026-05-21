@@ -60,9 +60,15 @@ export default function ServicesClient() {
         {services.map((s, i) => (
           <div key={s.title} className={`sp-image${i === active ? ' is-active' : ''}`}>
             <Image src={s.image} alt={s.title} fill sizes="50vw" style={{ objectFit: 'cover' }} />
-            <figcaption>
-              Project · <span style={{ color: 'var(--brand-burgundy-soft)' }}>{s.project}</span> →
-            </figcaption>
+            {/* Two-line "PROJECT / NAME →" credit caption per
+                §4 refinement 1 — stacked, not inline. Mirrors
+                ELICYON_03/04/05 reference frames. */}
+            <div className="sp-image__credit">
+              <span className="sp-image__eyebrow">Project</span>
+              <span className="sp-image__name">
+                {s.project} <span aria-hidden>→</span>
+              </span>
+            </div>
           </div>
         ))}
       </div>

@@ -6,40 +6,42 @@ import { useMemo, useState } from 'react';
 import { projects, type Project } from '@/lib/content';
 
 /**
- * Masonry-style projects index — patterned exactly on the addendum:
+ * Projects index — 3-column featured-anchor masonry (per §3 of the
+ * services/projects diff brief and ELICYON_06/07 reference frames).
  *
- * - 2-column grid where the right column is initially offset 200px
- *   down from the left so cards stagger visually instead of sitting
- *   on shared baselines.
- * - Card sizes mix standard portrait, standard landscape, wide
- *   featured and tall featured. We assign each card a variant
- *   deterministically from its index so the layout is stable
- *   across renders and filter swaps.
- * - Hover: image scales 1.03, a centred VIEW MORE label fades in,
- *   and a subtle dark scrim overlays the photo.
- * - A WORK IN PROGRESS chip in Suofeiya terracotta marks projects
- *   not yet delivered.
- * - Filter buttons are multi-select toggles: clicking an inactive
- *   filter adds it, clicking an active one removes it. Empty
- *   selection shows everything.
- * - A grid/list view toggle on the right swaps masonry for a
- *   stacked-row layout.
+ *   row layout:    [ FEATURED · 1.8fr ][ SMALL | SMALL · 1fr ]
+ *
+ * Each row anchors a featured card on the left and stacks up to two
+ * smaller cards on the right (the second small card is offset 120px
+ * down via CSS, giving elicyon's staggered rhythm without any
+ * hand-tuned per-card variant rotation).
+ *
+ * The old 2-column staggered grid + `cardVariant` index pattern
+ * (and the 200px margin-top hack on the right column) is gone —
+ * variant is now just `featured | small` and is driven by the row
+ * layout itself.
+ *
+ * Hover:
+ *   - image scales 1.04
+ *   - centered `↗ View more` overlay fades in over a dark scrim
+ *   - eyebrow becomes burgundy on title hover
+ *
+ * Eyebrow format: `CITY • CATEGORY` (centered-dot bullet U+2022),
+ * city in caps — matches elicyon exactly.
+ *
+ * WIP chip: terracotta `Work in progress` ribbon on three projects
+ * known to be unfinished.
+ *
+ * Filters: multi-select toggles (Apartment / Hotel / Villa / Office).
+ * Grid/list view toggle on the right swaps the masonry for a
+ * stacked-row layout.
  */
 type Category = Project['category'];
-const categories: Category[] = ['Apartment', 'Hotel', 'Villa', 'Office'];
+const CATEGORIES: Category[] = ['Apartment', 'Hotel', 'Villa', 'Office'];
 
-const WIP_SLUGS = new Set<string>([
-  'urban-residences',
-  'business-hotel',
-  'design-studio-cabinetry'
-]);
+const WIP_SLUGS = new Set<string>(['urban-residences', 'business-hotel', 'design-studio-cabinetry']);
 
-const cardVariant = (i: number): 'standard' | 'wide' | 'tall' | 'landscape' => {
-  // Hand-tuned rotation that produces the magazine feel: a tall anchor
-  // at top-left, then occasional wides and landscapes break the rhythm.
-  const pattern = ['tall', 'standard', 'standard', 'wide', 'landscape', 'standard', 'tall', 'standard', 'wide', 'standard', 'landscape', 'standard'] as const;
-  return pattern[i % pattern.length];
-};
+type CardVariant = 'featured' | 'small';
 
 export default function ProjectsClient() {
   const [active, setActive] = useState<Set<Category>>(new Set());
@@ -50,24 +52,25 @@ export default function ProjectsClient() {
     return projects.filter((p) => active.has(p.category));
   }, [active]);
 
-  const toggle = (c: Category) => {
+  const toggle = (c: Category) =>
     setActive((prev) => {
       const next = new Set(prev);
       if (next.has(c)) next.delete(c);
       else next.add(c);
       return next;
     });
-  };
 
-  // Distribute cards into two columns for the staggered masonry.
-  const { left, right } = useMemo(() => {
-    const l: Array<Project & { variant: ReturnType<typeof cardVariant> }> = [];
-    const r: typeof l = [];
-    filtered.forEach((p, i) => {
-      const v = cardVariant(i);
-      (i % 2 === 0 ? l : r).push({ ...p, variant: v });
-    });
-    return { left: l, right: r };
+  // Pack into rows: [featured, smallA, smallB], [featured, smallA, smallB], …
+  const rows = useMemo(() => {
+    const out: Array<{ featured: Project; small: Project[] }> = [];
+    let i = 0;
+    while (i < filtered.length) {
+      const featured = filtered[i++];
+      const small = filtered.slice(i, i + 2);
+      i += small.length;
+      out.push({ featured, small });
+    }
+    return out;
   }, [filtered]);
 
   return (
@@ -76,7 +79,7 @@ export default function ProjectsClient() {
         <div className="pf__left">
           <p className="pf__label">Filter projects</p>
           <div className="pf__buttons">
-            {categories.map((c) => (
+            {CATEGORIES.map((c) => (
               <button
                 key={c}
                 type="button"
@@ -132,17 +135,17 @@ export default function ProjectsClient() {
       </div>
 
       {view === 'grid' ? (
-        <section className="pmasonry">
-          <div className="pmasonry__col pmasonry__col--left">
-            {left.map((p, i) => (
-              <ProjectCardCmp key={p.slug} project={p} index={i} />
-            ))}
-          </div>
-          <div className="pmasonry__col pmasonry__col--right">
-            {right.map((p, i) => (
-              <ProjectCardCmp key={p.slug} project={p} index={i} />
-            ))}
-          </div>
+        <section className="pf-rows">
+          {rows.map((row, rIdx) => (
+            <div key={`${row.featured.slug}-${rIdx}`} className="pf-row">
+              <ProjectCardCmp project={row.featured} variant="featured" />
+              <div className="pf-row__pair">
+                {row.small.map((p) => (
+                  <ProjectCardCmp key={p.slug} project={p} variant="small" />
+                ))}
+              </div>
+            </div>
+          ))}
         </section>
       ) : (
         <section className="plist">
@@ -154,7 +157,7 @@ export default function ProjectsClient() {
               </div>
               <div className="plist__body">
                 <span className="pcard__eyebrow">
-                  {p.city} <span aria-hidden>·</span> {p.category.toUpperCase()}
+                  {p.city.toUpperCase()} <span aria-hidden>•</span> {p.category.toUpperCase()}
                 </span>
                 <h3 className="plist__title font-display">{p.title}</h3>
                 <span className="link-underline">View project</span>
@@ -167,24 +170,33 @@ export default function ProjectsClient() {
   );
 }
 
-function ProjectCardCmp({
-  project,
-  index
-}: {
-  project: Project & { variant: 'standard' | 'wide' | 'tall' | 'landscape' };
-  index: number;
-}) {
+function ProjectCardCmp({ project, variant }: { project: Project; variant: CardVariant }) {
   const isWip = WIP_SLUGS.has(project.slug);
   return (
-    <article className={`pcard pcard--${project.variant}`} style={{ animationDelay: `${index * 0.05}s` }}>
+    <article className={`pcard pcard--${variant}`}>
       <Link href={`/projects/${project.slug}`} data-cursor="view more">
         <figure className="pcard__media scroll-zoom">
-          <Image src={project.image} alt={project.title} fill sizes="(max-width: 900px) 100vw, 45vw" style={{ objectFit: 'cover' }} />
+          <Image
+            src={project.image}
+            alt={project.title}
+            fill
+            sizes={
+              variant === 'featured'
+                ? '(max-width: 900px) 100vw, 60vw'
+                : '(max-width: 900px) 100vw, 30vw'
+            }
+            style={{ objectFit: 'cover' }}
+          />
           {isWip ? <span className="pcard__wip">Work in progress</span> : null}
-          <span className="pcard__hover">View more</span>
+          <span className="pcard__hover">
+            <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden>
+              <path d="M0 0 L14 5 L6 7 L4 14 Z" fill="currentColor" />
+            </svg>
+            View more
+          </span>
         </figure>
         <p className="pcard__eyebrow">
-          {project.city} <span aria-hidden>·</span> {project.category.toUpperCase()}
+          {project.city.toUpperCase()} <span aria-hidden>•</span> {project.category.toUpperCase()}
         </p>
         <h3 className="pcard__title font-display">{project.title}</h3>
       </Link>

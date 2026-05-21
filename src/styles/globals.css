@@ -7,9 +7,11 @@
    Brand: SUOFEIYA wordmark, "O" replaced by a faceted burgundy cube.
    Palette is built around that mark: warm cream surfaces, deep
    charcoal type, burgundy as accent and cursor.
+   Cream is now the ONLY theme — the dual "cream"/"obsidian" system
+   was removed per STRICT_100_PERCENT_ADDENDUM and the §5.2 fix
+   brief.
    ============================================================ */
-:root,
-[data-theme='cream'] {
+:root {
   --bg-cream: #f4efe6;
   --bg-cream-alt: #ece4d4;
   --bg-warm-taupe: #c4b8a6;
@@ -40,37 +42,6 @@
   --proj-text-on-image: #f4efe6;
 
   --header-color: #1a1410;
-  --header-color-on-dark: #f4efe6;
-}
-
-[data-theme='obsidian'] {
-  --bg-cream: #14110e;
-  --bg-cream-alt: #1c1814;
-  --bg-warm-taupe: #2d271f;
-  --bg-charcoal: #0a0907;
-  --bg-burgundy: #8b1a1a;
-  --bg-burgundy-deep: #6e1414;
-
-  --text-near-black: #ede6d6;
-  --text-cream: #ede6d6;
-  --text-dim: rgba(237, 230, 214, 0.6);
-  --line: rgba(237, 230, 214, 0.14);
-  --line-strong: rgba(237, 230, 214, 0.32);
-
-  --bg: #14110e;
-  --bg-alt: #1c1814;
-  --text: #ede6d6;
-  --text-inverted: #1a1410;
-  --brand-burgundy: #c0413f;
-  --brand-burgundy-soft: #d36664;
-  --accent: var(--brand-burgundy);
-  --frame-terracotta: #c87a55;
-  --cursor-gold: var(--brand-burgundy);
-
-  --statement-bg: #14110e;
-  --proj-text-on-image: #ede6d6;
-
-  --header-color: #f4efe6;
   --header-color-on-dark: #f4efe6;
 }
 
@@ -436,9 +407,17 @@ button {
   border-radius: 50%;
   background: var(--brand-burgundy);
   transform: translate3d(-100px, -100px, 0);
-  transition: width 0.25s var(--ease-out), height 0.25s var(--ease-out), background 0.25s var(--ease-out),
-    opacity 0.25s var(--ease-out);
+  /* Hidden until the user has actively moved the mouse. The Cursor
+     component toggles `.is-ready` on the first `pointermove`. This
+     stops the dot from appearing on page-load screenshots and screen
+     recordings, where the brief flagged a stray red dot. */
+  opacity: 0;
+  transition: opacity 0.2s var(--ease-out), width 0.25s var(--ease-out), height 0.25s var(--ease-out),
+    background 0.25s var(--ease-out);
   mix-blend-mode: normal;
+}
+.cursor.is-ready {
+  opacity: 1;
 }
 .cursor.is-hover {
   width: 44px;
@@ -764,9 +743,6 @@ button {
   text-align: center;
   max-width: 1100px;
   color: var(--text-near-black);
-}
-[data-theme='obsidian'] .statement__copy {
-  color: var(--text-cream);
 }
 .statement__line {
   display: block;
@@ -2019,36 +1995,9 @@ button {
   text-transform: uppercase;
 }
 
-/* ===================== Theme switch ===================== */
-.theme-toggle {
-  position: fixed;
-  right: 24px;
-  top: calc(50% + 80px);
-  z-index: 91;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-family: var(--font-sans);
-  font-size: 11px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  padding: 8px 12px;
-  border: 1px solid var(--line);
-  background: var(--bg);
-  color: var(--text);
-  border-radius: 999px;
-  transition: opacity 0.3s var(--ease-out);
-}
-.theme-toggle:hover {
-  opacity: 0.7;
-}
-@media (max-width: 768px) {
-  .theme-toggle {
-    right: 16px;
-    bottom: 16px;
-    top: auto;
-  }
-}
+/* Theme-switch CSS removed — the dual cream/obsidian theme system
+   was removed per STRICT_100_PERCENT_ADDENDUM and the §5.2 fix
+   brief. The site is cream-only. */
 
 /* ===================== Split pane ===================== */
 .split-pane {
@@ -2066,7 +2015,10 @@ button {
   position: absolute;
   inset: 0;
   opacity: 0;
-  transition: opacity 0.8s var(--ease);
+  /* Crossfade tightened from 800ms → 320ms per §4 refinement 2 —
+     elicyon's split-pane image swap reads as a quick film-edit
+     cut, not a slow dissolve. */
+  transition: opacity 320ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 .sp-image.is-active {
   opacity: 1;
@@ -2076,13 +2028,43 @@ button {
   height: 100%;
   object-fit: cover;
 }
-.sp-image figcaption {
+/* Bottom-left project credit caption — stacked two-line block per
+   §4 refinement 1. Mirrors ELICYON_03/04/05 reference frames. */
+.sp-image__credit {
   position: absolute;
-  bottom: 32px;
-  left: 32px;
+  bottom: 36px;
+  left: 36px;
   color: var(--text-cream);
+  z-index: 2;
+  pointer-events: none;
+  text-shadow: 0 1px 16px rgba(0, 0, 0, 0.35);
+}
+.sp-image__eyebrow {
+  display: block;
+  font-family: var(--font-sans);
+  font-size: 10px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  font-weight: 600;
+  opacity: 0.85;
+  margin-bottom: 8px;
+}
+.sp-image__name {
+  display: block;
   font-family: var(--font-display);
-  font-size: 22px;
+  font-weight: 400;
+  font-size: clamp(20px, 2vw, 28px);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+.sp-image__name span {
+  margin-left: 12px;
+  display: inline-block;
+  transition: transform 0.4s var(--ease-out);
+}
+.sp-image.is-active .sp-image__name span {
+  /* tiny arrow nudge to draw the eye to the active block */
+  transform: translateX(4px);
 }
 .split-pane__right .service-block {
   min-height: 100vh;
@@ -3436,21 +3418,29 @@ button {
   border-color: var(--brand-burgundy);
 }
 
-.pmasonry {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 100px var(--gutter);
-  padding: 0 var(--gutter) 140px;
+/* 3-column featured-anchor masonry (per §3 of services/projects
+   diff brief + ELICYON_06/07 reference frames). Each .pf-row is a
+   featured-left card next to a 2-up small-card pair. The right
+   card in each pair sits 120px lower so the row reads as offset,
+   not bottom-aligned. */
+.pf-rows {
   max-width: var(--maxw);
   margin: 0 auto;
-}
-.pmasonry__col {
+  padding: 0 var(--gutter) 140px;
   display: flex;
   flex-direction: column;
-  gap: 100px;
+  gap: 120px;
 }
-.pmasonry__col--right {
-  margin-top: 200px;
+.pf-row {
+  display: grid;
+  grid-template-columns: 1.8fr 1fr;
+  gap: 24px;
+  align-items: start;
+}
+.pf-row__pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
 }
 .pcard {
   position: relative;
@@ -3505,6 +3495,14 @@ button {
   transition: opacity 0.4s var(--ease-out), transform 0.4s var(--ease-out);
   pointer-events: none;
   z-index: 2;
+  /* Pair the label with a cursor-arrow icon (mirrors elicyon's hover
+     overlay in ELICYON_07). */
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.pcard__hover svg {
+  transform: translateY(-1px);
 }
 .pcard a:hover .pcard__hover {
   opacity: 1;
@@ -3550,18 +3548,18 @@ button {
   color: var(--brand-burgundy);
 }
 
-/* Card size variants */
-.pcard--standard .pcard__media {
+/* Card size variants — driven by row layout, not index pattern.
+   featured = tall left anchor, small = standard portrait. */
+.pcard--featured .pcard__media {
+  aspect-ratio: 4/5;
+}
+.pcard--small .pcard__media {
   aspect-ratio: 3/4;
 }
-.pcard--tall .pcard__media {
-  aspect-ratio: 3/5;
-}
-.pcard--wide .pcard__media {
-  aspect-ratio: 16/10;
-}
-.pcard--landscape .pcard__media {
-  aspect-ratio: 4/3;
+/* Stagger the small-pair vertically so it doesn't bottom-align
+   with the featured card — gives elicyon's offset rhythm. */
+.pf-row__pair > .pcard:nth-child(2) {
+  margin-top: 120px;
 }
 
 /* List view (alternative) */
@@ -3600,15 +3598,16 @@ button {
   margin: 14px 0 24px;
 }
 @media (max-width: 900px) {
-  .pmasonry {
-    grid-template-columns: 1fr;
+  .pf-rows {
     gap: 56px;
     padding-bottom: 100px;
   }
-  .pmasonry__col {
+  .pf-row,
+  .pf-row__pair {
+    grid-template-columns: 1fr;
     gap: 56px;
   }
-  .pmasonry__col--right {
+  .pf-row__pair > .pcard:nth-child(2) {
     margin-top: 0;
   }
   .plist__row {
@@ -3629,9 +3628,11 @@ button {
   overflow: hidden;
   background: var(--bg-charcoal);
 }
-.pd-hero img {
-  width: 100%;
-  height: 100%;
+/* Next.js <Image fill> emits an <img> with `position:absolute; inset:0;
+   width:100%; height:100%`. We only need to enforce object-fit on the
+   DIRECT child here — without the `>` combinator the rule cascaded
+   onto later gallery <img>s nested inside .pd-hero descendants. */
+.pd-hero > img {
   object-fit: cover;
 }
 .pd-hero__scrim {
@@ -3655,6 +3656,35 @@ button {
   z-index: 2;
   text-shadow: 0 2px 24px rgba(0, 0, 0, 0.4);
   margin: 0;
+}
+
+/* Title clip-in. Mirrors elicyon's left→right wipe on hero titles
+   (see _brief/output/reference_frames/ELICYON_13/14/15). We
+   animate clip-path so the letters reveal progressively edge-by-edge,
+   not as a fade. The 200ms initial delay leaves room for the
+   sessionStorage-gated preloader (§1) to finish so the wipe isn't
+   competing with another animation.
+
+   The .services-hero__title--reveal class below shares this keyframe. */
+.pd-hero__title--reveal {
+  clip-path: inset(0 100% 0 0);
+  animation: pdHeroTitleReveal 760ms 200ms cubic-bezier(0.65, 0, 0.35, 1) forwards;
+}
+@keyframes pdHeroTitleReveal {
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+.services-hero__title--reveal {
+  clip-path: inset(0 100% 0 0);
+  animation: pdHeroTitleReveal 760ms 200ms cubic-bezier(0.65, 0, 0.35, 1) forwards;
+}
+@media (prefers-reduced-motion: reduce) {
+  .pd-hero__title--reveal,
+  .services-hero__title--reveal {
+    clip-path: none;
+    animation: none;
+  }
 }
 
 .pd-intro {

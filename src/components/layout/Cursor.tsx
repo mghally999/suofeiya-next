@@ -28,6 +28,11 @@ export default function Cursor() {
     const onMove = (e: PointerEvent) => {
       mouseX = e.clientX;
       mouseY = e.clientY;
+      // Until the user moves, the cursor stays invisible so it never
+      // shows up as a stray red dot on first paint / screen recordings.
+      if (dotRef.current && !dotRef.current.classList.contains('is-ready')) {
+        dotRef.current.classList.add('is-ready');
+      }
     };
 
     const onOver = (e: PointerEvent) => {
