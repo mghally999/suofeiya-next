@@ -124,8 +124,8 @@ export default function CatalogItemPage({
             {siblings.map((s) => {
               const cover = cmsImage(s.images[0]);
               return (
-                <Link key={s.id} href={`/catalog/${cat.slug}/${s.slug}`} className="cat-item scroll-zoom" data-cursor="view">
-                  <figure>
+                <Link key={s.id} href={`/catalog/${cat.slug}/${s.slug}`} className="cat-item" data-cursor="view">
+                  <figure className="scroll-zoom">
                     {cover ? (
                       <Image src={cover} alt={s.title} fill sizes="(max-width: 900px) 50vw, 22vw" style={{ objectFit: 'cover' }} />
                     ) : null}

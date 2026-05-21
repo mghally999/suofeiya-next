@@ -1,32 +1,33 @@
 'use client';
 
 import { useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 import { getGsap, getScrollTrigger } from '@/lib/gsap-client';
 
 /**
- * Site-wide scroll-scrubbed reveal.
+ * Site-wide scroll-tied reveal.
  *
- * Replaces the previous "Intersection-Observer → one-shot CSS
- * transition" pattern so every `.fade-up` element animates *as*
- * the user scrolls, not all at once when the element happens to
- * cross a threshold. Progress is tied directly to the scroll
- * position via ScrollTrigger's `scrub: true`.
+ * Previous version vibrated because:
+ *   - `scrub: true` snapped 1:1 to scroll, so any trackpad / lenis
+ *     jitter shook the animation.
+ *   - A MutationObserver on `document.body` re-wired every
+ *     ScrollTrigger on every DOM mutation (hover state toggles
+ *     React's class list, etc.) — every wire-up re-snapped elements
+ *     to their `prep` state mid-scroll, looking like a flash.
  *
- * - `.fade-up`     → fades + rises 36 → 0 px as the element travels
- *                    from `top 90%` to `top 60%`.
- * - `.scroll-zoom` → image-style scale-up from 0.92 → 1.0 across
- *                    the same window. Apply to wrapper elements
- *                    around <img> / <Image>.
- *
- * Behaviour is route-aware (re-runs on pathname change) and only
- * activates on hover-capable pointers; touch + reduced-motion
- * users get the final state immediately.
- *
- * Cleanup never touches the global ScrollTrigger list — only the
- * triggers created inside our context — so it can never orphan
- * pin-spacers from other components.
+ * This version:
+ *   - Uses `scrub: <number>` (smoothing factor) so the tween catches
+ *     up to scroll over a fraction of a second instead of locking
+ *     1:1. Visually identical, jitter-immune.
+ *   - Re-wires ONLY on `usePathname()` change — route navigation,
+ *     not arbitrary DOM mutations.
+ *   - Marks elements `data-reveal-wired="1"` so a re-run never
+ *     touches one that's already animated.
+ *   - Refreshes ScrollTrigger once after fonts + images settle.
  */
 export default function ScrollReveal() {
+  const pathname = usePathname();
+
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -40,100 +41,62 @@ export default function ScrollReveal() {
     const gsap = getGsap();
     const ScrollTrigger = getScrollTrigger();
 
-    let triggers: ReturnType<typeof ScrollTrigger.create>[] = [];
-
-    const wire = () => {
-      // Tear down anything from a prior route pass.
-      triggers.forEach((t) => t.kill());
-      triggers = [];
-
-      const ctx = gsap.context(() => {
-        // fade-up: opacity 0→1 + y 36→0 scrubbed against scroll.
-        document.querySelectorAll<HTMLElement>('.fade-up').forEach((el) => {
-          gsap.set(el, { opacity: 0, y: 36 });
-          const tw = gsap.to(el, {
-            opacity: 1,
-            y: 0,
-            ease: 'none',
-            scrollTrigger: {
-              trigger: el,
-              start: 'top 92%',
-              end: 'top 55%',
-              scrub: true,
-              onUpdate: (self) => {
-                // Keep .is-in in sync so any CSS depending on it
-                // (siblings, decorators) still toggles cleanly.
-                el.classList.toggle('is-in', self.progress > 0.4);
-              }
-            }
-          });
-          if (tw.scrollTrigger) triggers.push(tw.scrollTrigger);
+    const ctx = gsap.context(() => {
+      const wire = (
+        selector: string,
+        prep: gsap.TweenVars,
+        anim: gsap.TweenVars,
+        trigger: globalThis.ScrollTrigger.Vars
+      ) => {
+        document.querySelectorAll<HTMLElement>(selector).forEach((el) => {
+          if (el.dataset.revealWired === '1') return; // never re-wire
+          el.dataset.revealWired = '1';
+          gsap.set(el, prep);
+          gsap.to(el, { ...anim, scrollTrigger: { ...trigger, trigger: el } });
         });
+      };
 
-        // scroll-zoom: image wrappers scale 0.94 → 1.0 over a *long*
-        // scroll window so the image stays visible while you scroll
-        // it rather than snapping in/out at the edges of the viewport.
-        // The scrub is bound to the bottom and top of the element
-        // crossing the viewport, so the image is animated for the
-        // entire time it's on screen.
-        document.querySelectorAll<HTMLElement>('.scroll-zoom').forEach((el) => {
-          gsap.set(el, { scale: 0.94, transformOrigin: 'center center' });
-          const tw = gsap.to(el, {
-            scale: 1,
-            ease: 'none',
-            scrollTrigger: {
-              trigger: el,
-              start: 'top bottom',   // start the moment the top of the element enters the bottom of the viewport
-              end: 'bottom top',     // finish as the bottom of the element leaves the top of the viewport
-              scrub: 0.8
-            }
-          });
-          if (tw.scrollTrigger) triggers.push(tw.scrollTrigger);
-        });
+      // .fade-up — opacity + y rise scrubbed with smoothing.
+      wire(
+        '.fade-up',
+        { opacity: 0, y: 36 },
+        { opacity: 1, y: 0, ease: 'none' },
+        { start: 'top 90%', end: 'top 60%', scrub: 0.8 }
+      );
 
-        // reveal-line-inner: pre-existing mask-reveal class. Convert
-        // to scrubbed translateY for the same in-flow rhythm.
-        document.querySelectorAll<HTMLElement>('.reveal-line-inner').forEach((el) => {
-          gsap.set(el, { yPercent: 100 });
-          const tw = gsap.to(el, {
-            yPercent: 0,
-            ease: 'none',
-            scrollTrigger: {
-              trigger: el,
-              start: 'top 95%',
-              end: 'top 65%',
-              scrub: true,
-              onUpdate: (self) => el.classList.toggle('is-visible', self.progress > 0.4)
-            }
-          });
-          if (tw.scrollTrigger) triggers.push(tw.scrollTrigger);
-        });
-      });
+      // .scroll-zoom — image scale across the full visible lifetime.
+      wire(
+        '.scroll-zoom',
+        { scale: 0.96, transformOrigin: 'center center' },
+        { scale: 1, ease: 'none' },
+        { start: 'top bottom', end: 'bottom top', scrub: 1 }
+      );
 
-      // Recalc once the layout has settled (fonts, images).
-      const refresh = () => ScrollTrigger.refresh();
-      requestAnimationFrame(refresh);
-      window.addEventListener('load', refresh, { once: true });
-
-      return () => ctx.revert();
-    };
-
-    let cleanup = wire();
-
-    // Re-wire on client-side navigation so newly-mounted DOM nodes
-    // are picked up too.
-    const observer = new MutationObserver(() => {
-      cleanup?.();
-      cleanup = wire();
+      // .reveal-line-inner — mask reveal scrubbed.
+      wire(
+        '.reveal-line-inner',
+        { yPercent: 100 },
+        { yPercent: 0, ease: 'none' },
+        { start: 'top 95%', end: 'top 65%', scrub: 0.8 }
+      );
     });
-    observer.observe(document.body, { childList: true, subtree: false });
+
+    // Refresh once layout has settled (fonts + lazy images).
+    const refresh = () => ScrollTrigger.refresh();
+    const raf = requestAnimationFrame(refresh);
+    window.addEventListener('load', refresh, { once: true });
 
     return () => {
-      observer.disconnect();
-      cleanup?.();
-      triggers.forEach((t) => t.kill());
+      cancelAnimationFrame(raf);
+      window.removeEventListener('load', refresh);
+      ctx.revert();
+      // Drop the wired flag so the next pathname-driven pass re-runs
+      // cleanly on freshly-mounted DOM.
+      document
+        .querySelectorAll<HTMLElement>('[data-reveal-wired="1"]')
+        .forEach((el) => delete el.dataset.revealWired);
     };
-  }, []);
+  }, [pathname]);
 
   return null;
 }

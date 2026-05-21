@@ -33,8 +33,8 @@ export default function CatalogPage() {
           const items = itemsOfCategory(cat);
           const hero = cmsImage(cat.hero_uuid) ?? cmsImage(items.find((i) => i.images.length > 0)?.images[0]);
           return (
-            <Link key={cat.id} href={`/catalog/${cat.slug}`} className="cat-card scroll-zoom" data-cursor="explore">
-              <figure>
+            <Link key={cat.id} href={`/catalog/${cat.slug}`} className="cat-card" data-cursor="explore">
+              <figure className="scroll-zoom">
                 {hero ? <Image src={hero} alt={cat.title} fill sizes="(max-width: 900px) 100vw, 32vw" style={{ objectFit: 'cover' }} /> : null}
                 <span className="cat-card__count">{cat.item_ids.length}</span>
                 <span className="cat-card__hover">Enter category</span>

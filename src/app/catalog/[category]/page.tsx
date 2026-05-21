@@ -51,10 +51,10 @@ export default function CategoryPage({ params }: { params: { category: string } 
             <Link
               key={item.id}
               href={`/catalog/${cat.slug}/${item.slug}`}
-              className="cat-item scroll-zoom"
+              className="cat-item"
               data-cursor="view"
             >
-              <figure>
+              <figure className="scroll-zoom">
                 {cover ? (
                   <Image src={cover} alt={item.title} fill sizes="(max-width: 900px) 50vw, 25vw" style={{ objectFit: 'cover' }} />
                 ) : null}
