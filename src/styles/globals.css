@@ -664,7 +664,9 @@ button {
 .s2 {
   position: relative;
   background: var(--statement-bg);
-  height: 320vh;
+  /* Total scroll length the section occupies. 220vh = 100vh of
+     pinned reading + 120vh of scroll-driven image choreography. */
+  height: 220vh;
   overflow: hidden;
 }
 .s2-pin {
@@ -677,7 +679,7 @@ button {
 }
 .s2-copy {
   position: relative;
-  z-index: 2;
+  z-index: 5;            /* always sit ON TOP of the parallax frames */
   font-family: var(--font-display);
   font-size: clamp(32px, 4.4vw, 60px);
   font-weight: 400;
@@ -688,12 +690,13 @@ button {
 }
 .s2-line {
   display: block;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
 }
 .s2-word {
   display: inline-block;
-  margin: 0 0.22em 0.04em 0;
-  will-change: opacity;
+  margin: 0 0.06em 0.04em 0;   /* normal-ish word spacing */
+  opacity: 1;                  /* full opacity at all times */
+  color: var(--text-near-black);
 }
 .s2-word--em {
   font-style: italic;
@@ -701,12 +704,13 @@ button {
 }
 .s2-img {
   position: absolute;
-  width: 18vw;
-  max-width: 320px;
+  width: 16vw;
+  max-width: 280px;
   aspect-ratio: 3/4;
   overflow: hidden;
   background: var(--bg-cream-alt);
   z-index: 1;
+  opacity: 0.92;            /* slight knock-back so text stays primary */
   will-change: transform, opacity;
   box-shadow: 0 18px 50px rgba(26, 20, 16, 0.18);
 }

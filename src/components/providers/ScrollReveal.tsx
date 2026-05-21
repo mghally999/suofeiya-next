@@ -70,17 +70,22 @@ export default function ScrollReveal() {
           if (tw.scrollTrigger) triggers.push(tw.scrollTrigger);
         });
 
-        // scroll-zoom: image wrappers scale 0.92→1.0 scrubbed.
+        // scroll-zoom: image wrappers scale 0.94 → 1.0 over a *long*
+        // scroll window so the image stays visible while you scroll
+        // it rather than snapping in/out at the edges of the viewport.
+        // The scrub is bound to the bottom and top of the element
+        // crossing the viewport, so the image is animated for the
+        // entire time it's on screen.
         document.querySelectorAll<HTMLElement>('.scroll-zoom').forEach((el) => {
-          gsap.set(el, { scale: 0.92, transformOrigin: 'center center' });
+          gsap.set(el, { scale: 0.94, transformOrigin: 'center center' });
           const tw = gsap.to(el, {
             scale: 1,
             ease: 'none',
             scrollTrigger: {
               trigger: el,
-              start: 'top 95%',
-              end: 'top 40%',
-              scrub: 0.6
+              start: 'top bottom',   // start the moment the top of the element enters the bottom of the viewport
+              end: 'bottom top',     // finish as the bottom of the element leaves the top of the viewport
+              scrub: 0.8
             }
           });
           if (tw.scrollTrigger) triggers.push(tw.scrollTrigger);

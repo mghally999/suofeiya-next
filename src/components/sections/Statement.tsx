@@ -6,22 +6,20 @@ import { getGsap, getScrollTrigger } from '@/lib/gsap-client';
 import { IMG } from '@/lib/content';
 
 /**
- * Pinned, scrubbed manifesto — Suofeiya version.
+ * Pinned, scrubbed manifesto — Suofeiya.
  *
- * The previous implementation used per-line x/y magic numbers tuned
- * for the original Elicyon copy. Once we replaced the copy with the
- * Suofeiya brand narrative those numbers no longer matched, and lines
- * stacked / overlapped. This version drops the per-line choreography
- * entirely:
+ * Layout: a centred paragraph held in place by CSS sticky
+ * (`.s2-pin { position: sticky }`), with five floating frames
+ * drifting across it as the user scrolls.
  *
- *   - The statement is a single centred paragraph that scrubs in word
- *     by word as the section is pinned, then scrubs out the same way.
- *   - Five floating Suofeiya frames slide up behind the text on their
- *     own scrub timeline.
- *
- * Layout is plain block flow + transform — no horizontal offsets, no
- * collapse arrays. The copy can change freely without the layout
- * breaking.
+ * Behaviour rules (lessons from earlier iterations):
+ *   - Text opacity is FULL the whole time. Scrub-fading the words
+ *     left them illegible at the top/bottom of the section — fixed.
+ *   - Images slide in from below and STAY visible while the section
+ *     is in view. No fade-out near the end (was making frames flash
+ *     and vanish before the reader could see them).
+ *   - The whole section is shortened to 220vh so the images don't
+ *     drift forever before the page advances.
  */
 export default function Statement() {
   const root = useRef<HTMLElement | null>(null);
@@ -33,23 +31,16 @@ export default function Statement() {
     if (window.matchMedia('(max-width: 1024px)').matches) return;
 
     const gsap = getGsap();
-    // Register ScrollTrigger plugin; we do NOT touch the global
-    // ScrollTrigger list in cleanup — see comment at the bottom of
-    // this effect.
     getScrollTrigger();
+
     const ctx = gsap.context(() => {
-      const words = gsap.utils.toArray<HTMLElement>('.s2-word', root.current!);
       const imgs = gsap.utils.toArray<HTMLElement>('.s2-img', root.current!);
 
-      gsap.set(words, { opacity: 0.12 });
-      imgs.forEach((img, i) => gsap.set(img, { yPercent: 60 + i * 12, opacity: 0 }));
+      // Start the images below + invisible, then ride them up + in
+      // along the first 60% of the section's scroll. They stay put
+      // for the rest of the section.
+      imgs.forEach((img, i) => gsap.set(img, { yPercent: 80 + i * 14, opacity: 0 }));
 
-      // The pinning is done in CSS (.s2-pin is `position: sticky`).
-      // We deliberately do NOT use ScrollTrigger's `pin: true` here —
-      // that wraps the target in a pin-spacer div which React doesn't
-      // know about, and produces the
-      // "Failed to execute 'removeChild' on 'Node'" crash on HMR /
-      // route change. ScrollTrigger only drives the scrub here.
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: root.current,
@@ -59,27 +50,18 @@ export default function Statement() {
         }
       });
 
-      tl.to(words, { opacity: 1, duration: 0.5, stagger: 0.01, ease: 'none' }, 0);
       imgs.forEach((img, i) => {
-        tl.to(img, { yPercent: 0, opacity: 1, duration: 0.3, ease: 'power2.out' }, 0.05 + i * 0.05);
-        tl.to(img, { yPercent: -50 - i * 10, opacity: 0, duration: 0.25, ease: 'power2.in' }, 0.75 + i * 0.02);
+        tl.to(img, { yPercent: -8 - i * 6, opacity: 1, duration: 0.4, ease: 'power2.out' }, i * 0.05);
       });
-      tl.to(words, { opacity: 0.25, duration: 0.3, stagger: 0.005, ease: 'none' }, 0.78);
+      // Hold images in place for the rest of the timeline — a dummy
+      // tween is enough; without it ScrollTrigger marks the timeline
+      // complete and the last frame can pop.
+      tl.to({}, { duration: 0.4 });
     }, root);
 
-    return () => {
-      // ctx.revert() removes only animations + ScrollTriggers + pin
-      // spacers created inside *this* context. Killing the global
-      // ScrollTrigger list here would orphan pin-spacers belonging to
-      // other components and crash React on unmount with
-      // "Failed to execute 'removeChild' on 'Node'".
-      ctx.revert();
-    };
+    return () => ctx.revert();
   }, []);
 
-  // Brand statement assembled from the company profile + global mirror.
-  // Split into words so each one can scrub-fade individually without
-  // forcing per-line positioning.
   const lines: { text: string; em?: boolean }[][] = [
     [
       { text: 'One' },
@@ -121,11 +103,11 @@ export default function Statement() {
   ];
 
   const stickyImgs = [
-    { src: IMG.kitchenCabinets, alt: 'Suofeiya kitchen cabinet', x: '4vw', y: '6vh', side: 'right' },
-    { src: IMG.closet, alt: 'Suofeiya closet & wardrobe', x: '2vw', y: '24vh', side: 'left' },
-    { src: IMG.bathroomVanity, alt: 'Suofeiya bathroom vanity', x: '8vw', y: '14vh', side: 'right' },
-    { src: IMG.interiorDoor, alt: 'Suofeiya interior door', x: '5vw', y: '50vh', side: 'left' },
-    { src: IMG.servicesHome, alt: 'Suofeiya whole-house design', x: '7vw', y: '56vh', side: 'right' }
+    { src: IMG.kitchenCabinets, alt: 'Suofeiya kitchen cabinet', x: '4vw', y: '8vh', side: 'right' },
+    { src: IMG.closet, alt: 'Suofeiya closet & wardrobe', x: '3vw', y: '28vh', side: 'left' },
+    { src: IMG.bathroomVanity, alt: 'Suofeiya bathroom vanity', x: '8vw', y: '52vh', side: 'right' },
+    { src: IMG.interiorDoor, alt: 'Suofeiya interior door', x: '5vw', y: '56vh', side: 'left' },
+    { src: IMG.servicesHome, alt: 'Suofeiya whole-house design', x: '12vw', y: '14vh', side: 'right' }
   ];
 
   return (
@@ -149,7 +131,7 @@ export default function Statement() {
             <div key={li} className="s2-line">
               {line.map((w, wi) => (
                 <span key={wi} className={`s2-word${w.em ? ' s2-word--em' : ''}`}>
-                  {w.text}
+                  {w.text}{' '}
                 </span>
               ))}
             </div>
