@@ -8,3 +8,13 @@ out/
 .vercel
 .idea/
 .vscode/
+
+# Large local-only reference artifacts (kept on your disk, never pushed)
+*.zip
+*.mov
+*.pdf
+.venv/
+suofeiya_mirror/
+
+# Build artifacts from extract scripts
+scripts/images_to_fetch.txt

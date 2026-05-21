@@ -946,6 +946,7 @@ export const nav = [
     ]
   },
   { label: 'Project', href: '/projects' },
+  { label: 'Catalog', href: '/catalog' },
   { label: 'Franchise', href: '/careers' },
   { label: 'Press', href: '/insights' }
 ] as const;
