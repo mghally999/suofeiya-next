@@ -80,27 +80,63 @@ function buildGallerySlots(gallery: string[], title: string): Slot[] {
 }
 
 function renderSlot(slot: Slot, idx: number) {
+  // Mobile perf: every below-the-fold gallery image is lazy-loaded and
+  // quality-capped at 68 (AVIF at q=68 is visually identical to q=75
+  // for photographic content but ~25 % smaller on cellular).
+  const sharedImgProps = { quality: 68, loading: 'lazy' as const };
   switch (slot.kind) {
     case 'wide':
       return (
         <figure key={idx} className="pd-img pd-img--wide scroll-zoom">
-          <Image src={slot.src} alt={slot.alt} width={1600} height={900} sizes="90vw" style={{ width: '100%', height: 'auto' }} />
+          <Image
+            {...sharedImgProps}
+            src={slot.src}
+            alt={slot.alt}
+            width={1600}
+            height={900}
+            sizes="90vw"
+            style={{ width: '100%', height: 'auto' }}
+          />
         </figure>
       );
     case 'tall':
       return (
         <figure key={idx} className="pd-img pd-img--tall scroll-zoom">
-          <Image src={slot.src} alt={slot.alt} width={600} height={800} sizes="35vw" style={{ width: '100%', height: 'auto' }} />
+          <Image
+            {...sharedImgProps}
+            src={slot.src}
+            alt={slot.alt}
+            width={600}
+            height={800}
+            sizes="35vw"
+            style={{ width: '100%', height: 'auto' }}
+          />
         </figure>
       );
     case 'pair-left':
       return (
         <div key={idx} className="pd-pair pd-pair--left">
           <figure className="pd-img pd-img--medium scroll-zoom">
-            <Image src={slot.main.src} alt={slot.main.alt} width={900} height={675} sizes="55vw" style={{ width: '100%', height: 'auto' }} />
+            <Image
+              {...sharedImgProps}
+              src={slot.main.src}
+              alt={slot.main.alt}
+              width={900}
+              height={675}
+              sizes="55vw"
+              style={{ width: '100%', height: 'auto' }}
+            />
           </figure>
           <figure className="pd-img pd-img--accent scroll-zoom">
-            <Image src={slot.accent.src} alt={slot.accent.alt} width={480} height={360} sizes="22vw" style={{ width: '100%', height: 'auto' }} />
+            <Image
+              {...sharedImgProps}
+              src={slot.accent.src}
+              alt={slot.accent.alt}
+              width={480}
+              height={360}
+              sizes="22vw"
+              style={{ width: '100%', height: 'auto' }}
+            />
           </figure>
         </div>
       );
@@ -108,10 +144,26 @@ function renderSlot(slot: Slot, idx: number) {
       return (
         <div key={idx} className="pd-pair pd-pair--right">
           <figure className="pd-img pd-img--small scroll-zoom">
-            <Image src={slot.small.src} alt={slot.small.alt} width={400} height={400} sizes="30vw" style={{ width: '100%', height: 'auto' }} />
+            <Image
+              {...sharedImgProps}
+              src={slot.small.src}
+              alt={slot.small.alt}
+              width={400}
+              height={400}
+              sizes="30vw"
+              style={{ width: '100%', height: 'auto' }}
+            />
           </figure>
           <figure className="pd-img pd-img--large scroll-zoom">
-            <Image src={slot.main.src} alt={slot.main.alt} width={1200} height={900} sizes="60vw" style={{ width: '100%', height: 'auto' }} />
+            <Image
+              {...sharedImgProps}
+              src={slot.main.src}
+              alt={slot.main.alt}
+              width={1200}
+              height={900}
+              sizes="60vw"
+              style={{ width: '100%', height: 'auto' }}
+            />
           </figure>
         </div>
       );

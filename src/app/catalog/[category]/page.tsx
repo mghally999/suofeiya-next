@@ -56,7 +56,14 @@ export default function CategoryPage({ params }: { params: { category: string } 
             >
               <figure className="scroll-zoom">
                 {cover ? (
-                  <Image src={cover} alt={item.title} fill sizes="(max-width: 900px) 50vw, 25vw" style={{ objectFit: 'cover' }} />
+                  <Image
+                    src={cover}
+                    alt={item.title}
+                    fill
+                    sizes="(max-width: 900px) 50vw, 25vw"
+                    quality={70}
+                    style={{ objectFit: 'cover' }}
+                  />
                 ) : null}
                 <span className="cat-item__hover">View item</span>
               </figure>

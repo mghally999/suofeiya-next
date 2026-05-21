@@ -101,6 +101,8 @@ export default function CatalogItemPage({
                   width={1200}
                   height={900}
                   sizes="(max-width: 900px) 100vw, 60vw"
+                  quality={68}
+                  loading={i < 2 ? 'eager' : 'lazy'}
                   style={{ width: '100%', height: 'auto' }}
                 />
               </figure>
@@ -127,7 +129,15 @@ export default function CatalogItemPage({
                 <Link key={s.id} href={`/catalog/${cat.slug}/${s.slug}`} className="cat-item" data-cursor="view">
                   <figure className="scroll-zoom">
                     {cover ? (
-                      <Image src={cover} alt={s.title} fill sizes="(max-width: 900px) 50vw, 22vw" style={{ objectFit: 'cover' }} />
+                      <Image
+                        src={cover}
+                        alt={s.title}
+                        fill
+                        sizes="(max-width: 900px) 50vw, 22vw"
+                        quality={68}
+                        loading="lazy"
+                        style={{ objectFit: 'cover' }}
+                      />
                     ) : null}
                   </figure>
                   <h3 className="cat-item__title font-display">{s.title}</h3>
