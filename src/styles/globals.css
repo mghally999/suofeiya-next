@@ -2096,7 +2096,8 @@ button {
   font-size: 16px;
   line-height: 1.7;
   max-width: 480px;
-  color: var(--text-dim);
+  color: var(--text);
+  opacity: 0.82;
 }
 @media (max-width: 900px) {
   .split-pane {
@@ -3106,12 +3107,14 @@ button {
   letter-spacing: 0.02em;
 }
 
-/* Service-block title fade-in (addendum §8) */
+/* Service-block title.
+   Previously baselined at opacity:0.3 with a JS-toggled `.is-in`
+   class bumping it to 1.0. On mobile + slow clients the observer
+   sometimes hadn't fired before the user reached the section, so
+   the page read as "all titles empty / faded out". Titles now ship
+   at full opacity; the cinematic accent comes from the left-pane
+   image swap instead. */
 .sp-title {
-  opacity: 0.3;
-  transition: opacity 0.8s var(--ease-out);
-}
-.sp-title.is-in {
   opacity: 1;
 }
 
