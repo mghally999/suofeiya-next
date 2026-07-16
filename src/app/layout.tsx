@@ -65,6 +65,24 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" dir="ltr" className={`${display.variable} ${sans.variable}`}>
+      <head>
+        {/*
+          Pre-paint gate for the preloader. The server can't read
+          sessionStorage, so it always ships the preloader markup
+          *without* `is-hidden` — meaning on every reload the overlay
+          painted over the hero for the split second before React
+          hydrated and hid it. This blocking inline script runs before
+          first paint and, if the preloader has already been shown this
+          session, tags <html> so CSS removes the overlay immediately —
+          no flash, no re-cover. First visit is untouched.
+        */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "try{if(sessionStorage.getItem('__sf_preloader_shown')==='1')document.documentElement.classList.add('sf-preloader-done')}catch(e){}"
+          }}
+        />
+      </head>
       <body>
         <Preloader />
         <Cursor />

@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { nav } from '@/lib/content';
+import { navLeft, navRight } from '@/lib/content';
 import Logo from './Logo';
 import MobileMenu from './MobileMenu';
 
@@ -21,7 +21,7 @@ import MobileMenu from './MobileMenu';
  * relied on `:focus-within`, which kept the menu open whenever a
  * link inside still had focus — even with the mouse far away.
  */
-type NavItem = (typeof nav)[number];
+type NavItem = (typeof navLeft)[number] | (typeof navRight)[number];
 
 function NavDropdown({ item }: { item: NavItem }) {
   const [open, setOpen] = useState(false);
@@ -73,7 +73,7 @@ function NavDropdown({ item }: { item: NavItem }) {
         onMouseLeave={scheduleClose}
         aria-hidden={!open}
       >
-        {children.map((c) => (
+        {(children as ReadonlyArray<{ href: string; label: string }>).map((c) => (
           <Link key={c.href + c.label} href={c.href} onClick={() => setOpen(false)}>
             {c.label}
           </Link>
@@ -99,7 +99,7 @@ export default function Header() {
     <>
       <header className="site-header" id="siteHeader" data-scrolled={scrolled ? 'true' : 'false'}>
         <nav className="site-header__nav-left hidden lg:flex">
-          {nav.map((item) => (
+          {navLeft.map((item) => (
             <NavDropdown key={item.label} item={item} />
           ))}
         </nav>
@@ -116,9 +116,11 @@ export default function Header() {
 
         <Logo />
 
-        <Link href="/contact" className="site-header__contact hidden lg:inline-flex">
-          Contact us
-        </Link>
+        <nav className="site-header__nav-right hidden lg:flex">
+          {navRight.map((item) => (
+            <NavDropdown key={item.label} item={item} />
+          ))}
+        </nav>
 
         <Link href="/contact" className="site-header__contact lg:hidden">
           Contact

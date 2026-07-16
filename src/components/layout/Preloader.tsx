@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import Image from 'next/image';
-import { useEffect, useState } from 'react';
+import Image from "next/image";
+import { useEffect, useState } from "react";
 
 /**
  * Preloader uses the real SUOFEIYA brand PNG so the mark is
@@ -17,13 +17,13 @@ import { useEffect, useState } from 'react';
  *   - 700 ms on desktop where users are more forgiving of a brand
  *     beat.
  */
-const SESSION_KEY = '__sf_preloader_shown';
+const SESSION_KEY = "__sf_preloader_shown";
 
 export default function Preloader() {
   const [hidden, setHidden] = useState(() => {
-    if (typeof window === 'undefined') return false;
+    if (typeof window === "undefined") return false;
     try {
-      return sessionStorage.getItem(SESSION_KEY) === '1';
+      return sessionStorage.getItem(SESSION_KEY) === "1";
     } catch {
       return false;
     }
@@ -32,23 +32,27 @@ export default function Preloader() {
   useEffect(() => {
     if (hidden) return;
     const isTouch =
-      typeof window !== 'undefined' && window.matchMedia('(hover: none), (pointer: coarse)').matches;
+      typeof window !== "undefined" &&
+      window.matchMedia("(hover: none), (pointer: coarse)").matches;
     const t = setTimeout(
       () => {
         setHidden(true);
         try {
-          sessionStorage.setItem(SESSION_KEY, '1');
+          sessionStorage.setItem(SESSION_KEY, "1");
         } catch {
           /* private-mode quotas — fine to ignore */
         }
       },
-      isTouch ? 500 : 700
+      isTouch ? 500 : 700,
     );
     return () => clearTimeout(t);
   }, [hidden]);
 
   return (
-    <div className={`preloader${hidden ? ' is-hidden' : ''}`} aria-hidden={hidden}>
+    <div
+      className={`preloader${hidden ? " is-hidden" : ""}`}
+      aria-hidden={hidden}
+    >
       <Image
         src="/logo/sfylogo.png"
         alt="Suofeiya"
@@ -57,12 +61,14 @@ export default function Preloader() {
         priority
         sizes="400px"
         style={{
-          height: 'clamp(48px, 8vw, 88px)',
-          width: 'auto',
-          imageRendering: 'auto'
+          height: "clamp(48px, 8vw, 88px)",
+          width: "auto",
+          imageRendering: "auto",
         }}
       />
-      <div className="preloader__sub">Crafting Timeless Tailored Spaces · Since 1981</div>
+      <div className="preloader__sub">
+        Crafting Timeless Tailored Spaces · Since 1981
+      </div>
     </div>
   );
 }
